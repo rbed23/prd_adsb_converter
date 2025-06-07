@@ -28,7 +28,7 @@ def init_objects(obj, kwargs):
         obj: The object to initialize.
         kwargs: A dictionary containing attribute names and values.
     """
-    prd_fields = ['callsign', 'type', 'latitude', 'longitude', 'altitude', 'velocity', 'heading']
+    prd_fields = ['callsign', 'type', 'latitude', 'longitude', 'altitude', 'speed', 'heading']
 
     # Set default values for fields if not provided in kwargs
     for field in prd_fields:
@@ -54,13 +54,46 @@ class ADSBMessage:
     """
     A class representing an ADS-B message.
     This is a placeholder for the actual implementation.
+
+    Attributes:
+    now         timestamp created   (float optional)
+    hex         ICAO Identifier     (String optional)
+    flight      IDENT Identifier    (String optional - name of plane)
+    alt_baro    barometric alt (feet)   (int optional - altitude)
+    alt_geom (int optional)
+    track (int optional)
+    baro_rate (int optional)
+    category (string optional)
+    nav_qnh (float optional)
+    nav_altitude_mcp (int optional)
+    nav_heading (float optional)
+    nic (int optional)
+    rc (int optional)
+    seen_pos (float optional)
+    version (int optional)
+    nic_baro (int optional)
+    nac_p (int optional)
+    nac_v (int optional)
+    sil (int optional)
+    sil_type (string optional)
+    mlat (array optional)
+    tisb (array optional)
+    messages (int optional)
+    seen        timestamp reported  (float optional)
+    rssi (float optional)
+    squawk (optional) - look at # conversion 7600, 7700, 4000, 5000, 7777, 6100, 5400, 4399, 4478, ...)
+    speed       ground speed (knts)     (optional)
+    mach (optional speed, mac to mph *767)
+    emergency (optional string)
+    lat         latitude        (long optional)
+    lon         longitude       (long optional)
     """
     callsign = ""
     type = ""
     latitude = 0.0
     longitude = 0.0
     altitude = 0.0
-    velocity = 0.0
+    speed = 0.0
     heading = 0.0
     icon = ""
     tail_number = ""
@@ -85,7 +118,7 @@ class ADSBMessage:
     def __repr__(self):
         return (f"ADSBMessage(callsign={self.callsign}, tail={self.tail_number}, "
                 f"latitude={self.latitude}, longitude={self.longitude}, "
-                f"altitude={self.altitude}, velocity={self.velocity}, heading={self.heading}, "
+                f"altitude={self.altitude}, speed={self.speed}, heading={self.heading}, "
                 f"type={self.type}, icon={self.icon})")
 
     def __iter__(self):
@@ -102,7 +135,7 @@ class PRDMessage:
     latitude = 0.0
     longitude = 0.0
     altitude = 0.0
-    velocity = 0.0
+    speed = 0.0
     heading = 0.0
     icon = ""
 
@@ -123,7 +156,7 @@ class PRDMessage:
             'latitude': self.latitude,
             'longitude': self.longitude,
             'altitude': self.altitude,
-            'velocity': self.velocity,
+            'speed': self.speed,
             'heading': self.heading,
             'icon': self.icon
         }

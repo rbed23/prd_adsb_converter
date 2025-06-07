@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 This is a simple script that connects to a UDP socket to listen for incoming PRD messages
-and converts to them a ADS-B-compatible format.
+and converts to them an ADS-B-compatible format.
 The ADS-B message is then re-transmitted out a specified UDP port.
 
 It uses the `socket` library to create a UDP socket and listen for incoming messages.
@@ -38,6 +38,7 @@ def main():
 
     # Configure logging
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)  # Set the root minimum logging level
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Console handler
@@ -50,7 +51,7 @@ def main():
     dt = datetime.now().strftime("%Y%m%d-%H%M%S")
     file_handler = logging.FileHandler(f'logs/app_{dt}.log')
     file_handler.setFormatter(formatter)
-    file_handler.setLevel(getattr(logging, args.log_level, logging.INFO))  # Set the level for file output
+    file_handler.setLevel(getattr(logging, args.log_level, logging.DEBUG))  # Set the level for file output
     logger.addHandler(file_handler)
 
     logger.info(f"\n---------------------------------------------------\n"
@@ -79,11 +80,14 @@ def main():
             logger.debug(f"Converted ADS-B message: {adsb_message}")
 
             # Send ADS-B message
-            requests.post(f"http://{args.adsb_host}:{args.adsb_port}/adsb", json=dict(adsb_message))
-            logger.info(f"Sent ADS-B message: {adsb_message}")
+            r = requests.post(f"http://{args.adsb_host}:{args.adsb_port}/adsb", json=dict(adsb_message))
+            if r.status_code == 200:
+                logger.info(f"Successfully forwarded ADS-B message {r.status_code} {r.text}")
+            else:
+                logger.error(f"Failed to send ADS-B message: {r.status_code} {r.text}")
 
         except KeyboardInterrupt:
-            logger.info("Exiting...\n\n")
+            logger.info("Exited by User!")
             break
         except Exception as e:
             logger.error(f"Error: {(e,)}")
